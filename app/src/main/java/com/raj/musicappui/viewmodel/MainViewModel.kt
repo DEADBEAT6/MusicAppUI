@@ -1,8 +1,9 @@
-package com.raj.musicappui
+package com.raj.musicappui.viewmodel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.raj.musicappui.navigation.Screen
 
 class MainViewModel :ViewModel(){
 

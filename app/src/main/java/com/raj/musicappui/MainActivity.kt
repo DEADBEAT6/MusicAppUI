@@ -3,6 +3,7 @@ package com.raj.musicappui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.raj.musicappui.presentation.MainView
 import com.raj.musicappui.ui.theme.MusicAppUITheme
 
 class MainActivity : ComponentActivity() {

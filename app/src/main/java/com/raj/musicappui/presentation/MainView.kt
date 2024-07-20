@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.raj.musicappui
+package com.raj.musicappui.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,8 +34,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,22 +48,27 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.raj.musicappui.viewmodel.MainViewModel
+import com.raj.musicappui.R
+import com.raj.musicappui.navigation.Navigation
+import com.raj.musicappui.navigation.Screen
+import com.raj.musicappui.presentation.component.AccountDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MainView(){
+fun MainView() {
     val scaffoldState: ScaffoldState = rememberScaffoldState()
-    val scope : CoroutineScope = rememberCoroutineScope()
+    val scope: CoroutineScope = rememberCoroutineScope()
     val viewModel: MainViewModel = viewModel()
     val isSheetFullScreen by remember {
         mutableStateOf(false)
     }
-    val modifier=if(isSheetFullScreen) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
+    val modifier = if (isSheetFullScreen) Modifier.fillMaxSize() else Modifier.fillMaxWidth()
 
-    val currentScreen =  remember {
+    val currentScreen = remember {
         viewModel.currentScreen.value
     }
     val title = remember {
@@ -78,9 +81,9 @@ fun MainView(){
             it != ModalBottomSheetValue.HalfExpanded
         })
 
-    val roundedCornerRadius = if(isSheetFullScreen) 0.dp else 12.dp
+    val roundedCornerRadius = if (isSheetFullScreen) 0.dp else 12.dp
 
-    val dialogOpen   = remember {
+    val dialogOpen = remember {
         mutableStateOf(false)
     }
 
@@ -90,32 +93,38 @@ fun MainView(){
     val currentRoute = navBackStackEntry?.destination?.route
 
 
-    val bottomBar: @Composable ( )->Unit={
+    val bottomBar: @Composable () -> Unit = {
         if (currentScreen is Screen.DrawerScreen || currentScreen == Screen.BottomScreen.Home)
-            BottomNavigation (Modifier.wrapContentSize()){
+            BottomNavigation(Modifier.wrapContentSize()) {
 
-                screensInBottomBAr.forEach{
-                    item->
+                screensInBottomBAr.forEach { item ->
                     val isSelected = currentRoute == item.bRoute
-                    val tint = if(isSelected)Color.White else Color.Black
-                    BottomNavigationItem(selected = currentRoute  == item.bRoute,
+                    val tint = if (isSelected) Color.White else Color.Black
+                    BottomNavigationItem(
+                        selected = currentRoute == item.bRoute,
                         onClick = {
                             controller.navigate(item.bRoute)
-                            title.value = item.bTitle},
+                            title.value = item.bTitle
+                        },
                         icon = {
 
-                            Icon(tint = tint,
-                                painter = painterResource(id = item.icon), contentDescription = item.bTitle)
+                            Icon(
+                                tint = tint,
+                                painter = painterResource(id = item.icon),
+                                contentDescription = item.bTitle
+                            )
                         },
-                        label ={
-                            Text(text = item.bTitle,
-                            color = tint
-                            )},
-                        selectedContentColor =Color.White,
-                        unselectedContentColor =Color.Black
+                        label = {
+                            Text(
+                                text = item.bTitle,
+                                color = tint
+                            )
+                        },
+                        selectedContentColor = Color.White,
+                        unselectedContentColor = Color.Black
 
 
-                        )
+                    )
                 }
 
 
@@ -124,103 +133,115 @@ fun MainView(){
 
     ModalBottomSheetLayout(
         sheetState = modalSheetState,
-        sheetShape = RoundedCornerShape(topStart = roundedCornerRadius, topEnd = roundedCornerRadius),
+        sheetShape = RoundedCornerShape(
+            topStart = roundedCornerRadius,
+            topEnd = roundedCornerRadius
+        ),
         sheetContent = {
-            MoreButtonSheet(modifier = modifier)})
-        {
-            Scaffold(
-                bottomBar = {bottomBar()},
-                topBar = {
-                    TopAppBar(
-                        title = { Text(text = title.value)},
-                        actions = {
-                            Row {
-                                IconButton(
-                                    onClick = {
-                                        scope.launch {
-                                            if (modalSheetState.isVisible)
-                                                modalSheetState.hide()
-                                            else
-                                                modalSheetState.show()
-                                        }
+            MoreButtonSheet(modifier = modifier)
+        })
+    {
+        Scaffold(
+            bottomBar = { bottomBar() },
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = title.value) },
+                    actions = {
+                        Row {
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        if (modalSheetState.isVisible)
+                                            modalSheetState.hide()
+                                        else
+                                            modalSheetState.show()
                                     }
-                                ) {
-                                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
                                 }
-                            }
-                            IconButton(onClick = {
-                                /*TODO open the drawer*/
-                                scope.launch {
-                                    scaffoldState.drawerState.open()
-                                }
-                            }) {
-                                Icon(imageVector = Icons.Default.AccountCircle,
-                                    contentDescription = "Menu" )
-
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MoreVert,
+                                    contentDescription = null
+                                )
                             }
                         }
-                    )
-                },
+                        IconButton(onClick = {
+                            /*TODO open the drawer*/
+                            scope.launch {
+                                scaffoldState.drawerState.open()
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "Menu"
+                            )
 
-                scaffoldState = scaffoldState,
-                drawerContent = {
-                    LazyColumn(modifier = Modifier.padding(6.dp)) {
-                        items(screensInDrawer)  {
-                                item->
-                            DrawerItem(selected = currentRoute == item.dRoute , item = item) {
+                        }
+                    }
+                )
+            },
 
-                                scope.launch {
-                                    scaffoldState.drawerState.close()
-                                }
-                                if(item.dRoute == "add_account"){
-                                    dialogOpen.value = true
-                                }
-                                else{
-                                    controller.navigate(item.dRoute)
-                                    title.value = item.dTitle
+            scaffoldState = scaffoldState,
+            drawerContent = {
+                LazyColumn(modifier = Modifier.padding(6.dp)) {
+                    items(screensInDrawer) { item ->
+                        DrawerItem(selected = currentRoute == item.dRoute, item = item) {
 
-                                }
+                            scope.launch {
+                                scaffoldState.drawerState.close()
+                            }
+                            if (item.dRoute == "add_account") {
+                                dialogOpen.value = true
+                            } else {
+                                controller.navigate(item.dRoute)
+                                title.value = item.dTitle
+
                             }
                         }
                     }
                 }
-            )
-            {
-                Navigation(navController =controller , viewModel = viewModel, pd = it)
-                AccountDialog(dialogOpen = dialogOpen)
             }
+        )
+        {
+            Navigation(navController = controller, viewModel = viewModel, pd = it)
+            AccountDialog(dialogOpen = dialogOpen)
         }
+    }
 
 }
+
 @Composable
 fun DrawerItem(
     selected: Boolean,
-    item : Screen.DrawerScreen,
-    onDrawerItemClicked:()->Unit
-){
-    val background = if(selected) Color.LightGray else Color.White
+    item: Screen.DrawerScreen,
+    onDrawerItemClicked: () -> Unit
+) {
+    val background = if (selected) Color.LightGray else Color.White
     Row(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = 6.dp, vertical = 12.dp)
             .background(background)
             .clickable { onDrawerItemClicked() }
-    ){
-        Icon(painter = painterResource(id = item.icon), contentDescription = item.dTitle ,
-            modifier = Modifier.padding(end = 8.dp,top = 4.dp)
+    ) {
+        Icon(
+            painter = painterResource(id = item.icon), contentDescription = item.dTitle,
+            modifier = Modifier.padding(end = 8.dp, top = 4.dp)
         )
-        Text(text = item.dTitle,
-            style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = item.dTitle,
+            style = MaterialTheme.typography.headlineMedium
+        )
 
 
     }
 
 }
+
 val screensInBottomBAr = listOf(
     Screen.BottomScreen.Browse,
     Screen.BottomScreen.Home,
     Screen.BottomScreen.Library
-    )
+)
 val screensInDrawer = listOf(
     Screen.DrawerScreen.Account,
     Screen.DrawerScreen.AddAccount,
@@ -229,27 +250,34 @@ val screensInDrawer = listOf(
     )
 
 @Composable
-fun MoreButtonSheet(modifier: Modifier){
+fun MoreButtonSheet(modifier: Modifier) {
     Box(
         Modifier
             .fillMaxWidth()
             .height(300.dp)
-            .background(color = Color(0xFF6200EE)))
+            .background(color = Color(0xFF6200EE))
+    )
     {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.SpaceBetween) {
             Row(Modifier.padding(16.dp)) {
-                Icon(painter = painterResource(id = R.drawable.baseline_settings_24),
-                    contentDescription ="Settings")
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_settings_24),
+                    contentDescription = "Settings"
+                )
                 Text(text = "Settings", fontSize = 20.sp, color = Color.White)
             }
             Row(Modifier.padding(16.dp)) {
-                Icon(painter = painterResource(id = R.drawable.baseline_share_24),
-                    contentDescription ="Share")
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_share_24),
+                    contentDescription = "Share"
+                )
                 Text(text = "Share", fontSize = 20.sp, color = Color.White)
             }
             Row(Modifier.padding(16.dp)) {
-                Icon(painter = painterResource(id = R.drawable.baseline_help_24),
-                    contentDescription ="Help")
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_help_24),
+                    contentDescription = "Help"
+                )
                 Text(text = "Help", fontSize = 20.sp, color = Color.White)
             }
 

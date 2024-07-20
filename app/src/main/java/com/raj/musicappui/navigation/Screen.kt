@@ -1,23 +1,25 @@
-package com.raj.musicappui
+package com.raj.musicappui.navigation
 
 import androidx.annotation.DrawableRes
+import com.raj.musicappui.R
 
 sealed class Screen (
     val title:  String,
     val route: String
 ){
-    sealed class BottomScreen(val bTitle:String,val bRoute:String, @DrawableRes val icon:Int):Screen(bTitle,bRoute){
-        object Home:BottomScreen(
+    sealed class BottomScreen(val bTitle:String,val bRoute:String, @DrawableRes val icon:Int):
+        Screen(bTitle,bRoute){
+        object Home: BottomScreen(
             "Home",
             "home",
             R.drawable.baseline_home_24
         )
-        object Library:BottomScreen(
+        object Library: BottomScreen(
             "Library",
             "library",
             R.drawable.ic_subscribe
         )
-        object Browse:BottomScreen(
+        object Browse: BottomScreen(
             "Browse",
             "browse",
             R.drawable.baseline_apps_24
@@ -28,7 +30,8 @@ sealed class Screen (
 
 
 
-    sealed class DrawerScreen (val dTitle: String, val dRoute: String, @DrawableRes val icon: Int):Screen(dTitle,dRoute) {
+    sealed class DrawerScreen (val dTitle: String, val dRoute: String, @DrawableRes val icon: Int):
+        Screen(dTitle,dRoute) {
         object Account: DrawerScreen(
             "Account",
             "account",

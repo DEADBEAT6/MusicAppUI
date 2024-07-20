@@ -1,4 +1,4 @@
-package com.raj.musicappui
+package com.raj.musicappui.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.raj.musicappui.data.Lib
+import com.raj.musicappui.data.libraries
 
 @Composable
 fun LibraryView(){
